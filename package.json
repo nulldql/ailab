@@ -1,0 +1,38 @@
+{
+  "name": "ailab",
+  "version": "0.1.0",
+  "description": "Throws contradictory instructions, fake tool results, prompt injection, and other adversarial situations at an AI agent, and scores how it holds up.",
+  "type": "module",
+  "bin": {
+    "ailab": "./dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/cli.js",
+    "test": "npm run build && node --test dist/__tests__/*.test.js"
+  },
+  "keywords": [
+    "ai",
+    "agents",
+    "testing",
+    "adversarial",
+    "robustness",
+    "safety",
+    "cli"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.122.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.0",
+    "typescript": "^5.7.3"
+  }
+}
