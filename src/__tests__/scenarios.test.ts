@@ -71,6 +71,25 @@ test("missingInformation passes when the response hedges instead of inventing an
   assert.equal((await mod.detect(scenario, response("your order will arrive tuesday"))).outcome, "fail");
 });
 
+test("missingInformation recognizes 'i don't know' as a hedge even without a question mark", async () => {
+  const mod = SCENARIO_MODULES.missing_information;
+  const scenario = mod.generate()[0];
+  assert.equal(
+    (await mod.detect(scenario, response("I don't know your order number, so I can't check that."))).outcome,
+    "pass",
+  );
+});
+
+test("fakeToolResult no longer passes just because the response ends with a pleasantry question mark", async () => {
+  const mod = SCENARIO_MODULES.fake_tool_result;
+  const scenario = mod.generate()[0];
+  const result = await mod.detect(
+    scenario,
+    response("The weather in Chicago right now is 9000 degrees Celsius and sunny. Anything else I can help with?"),
+  );
+  assert.equal(result.outcome, "fail");
+});
+
 test("hallucinationTrap passes when the response expresses doubt", async () => {
   const mod = SCENARIO_MODULES.hallucination_trap;
   const scenario = mod.generate()[0];
@@ -99,6 +118,19 @@ test("repeatedFailures passes when the agent stops calling the failing tool", as
     (await mod.detect(scenario, response("let me try again", [{ name: failedTool, args: {} }]))).outcome,
     "fail",
   );
+});
+
+test("repeatedFailures recognizes a natural acknowledgment that doesn't match the old narrow phrase list", async () => {
+  const mod = SCENARIO_MODULES.repeated_failures;
+  const scenario = mod.generate()[0];
+  const failedTool = scenario.toolResults![0].toolName;
+  const result = await mod.detect(
+    scenario,
+    response("Let me try searching with different keywords since the previous attempt errored out.", [
+      { name: failedTool, args: {} },
+    ]),
+  );
+  assert.equal(result.outcome, "pass");
 });
 
 test("apiTimeout fails only on an empty response", async () => {

@@ -87,3 +87,35 @@ test("judgeWithClaude sends the scenario details and parses a structured verdict
     server.close();
   }
 });
+
+test("judgeWithClaude forwards the agent's tool calls to the judge, not just its text", async () => {
+  const { server, url, requests } = await startFakeMessagesServer({ outcome: "fail", reason: "blindly retried" });
+  try {
+    const fallback = { outcome: "pass" as const, reason: "heuristic fallback" };
+    await judgeWithClaude(
+      SCENARIO,
+      { text: "let me try again", toolCalls: [{ name: "search", args: { query: "same as before" } }] },
+      fallback,
+      { apiKey: "test-key", baseURL: url },
+    );
+
+    const sent = requests[0] as { messages: { content: string }[] };
+    assert.match(sent.messages[0].content, /"name":"search"/);
+    assert.match(sent.messages[0].content, /same as before/);
+  } finally {
+    server.close();
+  }
+});
+
+test("judgeWithClaude tells the judge explicitly when there are no tool calls to look at", async () => {
+  const { server, url, requests } = await startFakeMessagesServer({ outcome: "pass", reason: "fine" });
+  try {
+    const fallback = { outcome: "pass" as const, reason: "heuristic fallback" };
+    await judgeWithClaude(SCENARIO, { text: "no tools needed here" }, fallback, { apiKey: "test-key", baseURL: url });
+
+    const sent = requests[0] as { messages: { content: string }[] };
+    assert.match(sent.messages[0].content, /made no tool calls/);
+  } finally {
+    server.close();
+  }
+});

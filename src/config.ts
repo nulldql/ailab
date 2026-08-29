@@ -64,13 +64,20 @@ export function parseArgs(argv: string[]): ParsedArgs | null {
   for (let i = 1; i < rest.length; i++) {
     const arg = rest[i];
     if (arg === "--only") {
-      only = next(arg, i)
+      const raw = next(arg, i);
+      only = raw
         .split(",")
         .map((kind) => kind.trim())
         .filter(Boolean);
+      if (only.length === 0) throw new Error(`--only needs at least one scenario kind, got "${raw}"`);
       i += 1;
     } else if (arg === "--timeout") {
-      timeoutMs = Number(next(arg, i));
+      const raw = next(arg, i);
+      const value = Number(raw);
+      if (!Number.isFinite(value) || value <= 0) {
+        throw new Error(`--timeout needs a positive number of milliseconds, got "${raw}"`);
+      }
+      timeoutMs = value;
       i += 1;
     } else if (arg === "--judge") {
       useJudge = true;
@@ -82,8 +89,6 @@ export function parseArgs(argv: string[]): ParsedArgs | null {
       throw new Error(`unknown flag "${arg}"`);
     }
   }
-
-  if (!timeoutMs || timeoutMs <= 0) throw new Error("--timeout must be a positive number");
 
   return { command: "test", target, only, timeoutMs, useJudge, json, verbose };
 }

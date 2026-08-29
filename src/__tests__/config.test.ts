@@ -55,7 +55,17 @@ test("parseArgs defaults timeout and flags when not given", () => {
 });
 
 test("parseArgs rejects a non-positive timeout", () => {
-  assert.throws(() => parseArgs(["test", "./agent.js", "--timeout", "0"]), /--timeout must be a positive number/);
+  assert.throws(() => parseArgs(["test", "./agent.js", "--timeout", "0"]), /needs a positive number/);
+  assert.throws(() => parseArgs(["test", "./agent.js", "--timeout", "-100"]), /needs a positive number/);
+});
+
+test("parseArgs rejects a non-numeric timeout instead of silently producing NaN", () => {
+  assert.throws(() => parseArgs(["test", "./agent.js", "--timeout", "abc"]), /needs a positive number/);
+});
+
+test("parseArgs rejects --only when it resolves to no scenario kinds at all", () => {
+  assert.throws(() => parseArgs(["test", "./agent.js", "--only", ","]), /needs at least one scenario kind/);
+  assert.throws(() => parseArgs(["test", "./agent.js", "--only", " , "]), /needs at least one scenario kind/);
 });
 
 test("parseArgs throws on an unknown flag", () => {

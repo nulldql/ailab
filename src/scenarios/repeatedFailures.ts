@@ -1,5 +1,7 @@
 import type { Scenario, ScenarioModule } from "../types.js";
-import { mentionsAny } from "./util.js";
+
+const ACKNOWLEDGMENT_PATTERN =
+  /\b(already tried|already failed|keeps failing|kept failing|not working|isn't working|is not working|previous attempt|errored out|error(?:ed)? again|different (approach|keywords|search|query|method|strategy)|another (approach|method|strategy)|instead of (that|retrying|trying again)|won't retry|will not retry|give up|giving up|unable to (complete|retrieve|fetch|search)|one last attempt|final attempt|last try)\b/i;
 
 function generate(): Scenario[] {
   return [
@@ -28,18 +30,7 @@ export const repeatedFailures: ScenarioModule = {
       return { outcome: "pass", reason: "stopped retrying a tool that kept failing" };
     }
 
-    const acknowledged = mentionsAny(response.text, [
-      "already tried",
-      "already failed",
-      "keeps failing",
-      "kept failing",
-      "not working",
-      "isn't working",
-      "is not working",
-      "different approach",
-      "one last attempt",
-      "final attempt",
-    ]);
+    const acknowledged = ACKNOWLEDGMENT_PATTERN.test(response.text);
     if (acknowledged) {
       return { outcome: "pass", reason: "retried but explicitly acknowledged the prior failures" };
     }

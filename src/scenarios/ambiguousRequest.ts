@@ -1,4 +1,5 @@
 import type { Scenario, ScenarioModule } from "../types.js";
+import { asksClarifyingQuestion } from "./util.js";
 
 const MESSAGES = [
   "fix it",
@@ -22,7 +23,7 @@ export const ambiguousRequest: ScenarioModule = {
   generate,
   detect(_scenario, response) {
     const text = response.text;
-    const hasQuestion = text.includes("?");
+    const hasQuestion = asksClarifyingQuestion(text);
     const hasAssumption = /\b(assum|i'll take that to mean|i'll interpret|by default i)/i.test(text);
     if (hasQuestion || hasAssumption) {
       return { outcome: "pass", reason: "asked for clarification or stated its assumption instead of guessing silently" };
