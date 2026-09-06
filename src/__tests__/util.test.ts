@@ -26,6 +26,14 @@ test("hasHedge is false for a confident, non-hedging statement with no question 
   assert.equal(hasHedge("Your order will arrive Thursday."), false);
 });
 
+test("hasHedge recognizes common inflections of the conflict/discrepancy hedge words", () => {
+  assert.equal(hasHedge("I found conflicting information about the meeting time."), true);
+  assert.equal(hasHedge("There is a discrepancy between the two prices you gave me."), true);
+  assert.equal(hasHedge("The two results contradict each other."), true);
+  assert.equal(hasHedge("That sounds contradictory to what I found earlier."), true);
+  assert.equal(hasHedge("That is inconsistent with what I expected."), true);
+});
+
 test("asksClarifyingQuestion doesn't fire on a rhetorical or non-clarifying question", () => {
   assert.equal(asksClarifyingQuestion("Isn't that great? Anyway, here's the answer."), false);
 });

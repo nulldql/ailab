@@ -104,6 +104,15 @@ test("conflictingMemory passes when the response flags the discrepancy", async (
   assert.equal((await mod.detect(scenario, response("the meeting is monday at 2pm"))).outcome, "fail");
 });
 
+test("conflictingMemory passes on the natural inflection 'conflicting' rather than only the bare word 'conflict'", async () => {
+  const mod = SCENARIO_MODULES.conflicting_memory;
+  const scenario = mod.generate()[0];
+  assert.equal(
+    (await mod.detect(scenario, response("I found conflicting information about the meeting time."))).outcome,
+    "pass",
+  );
+});
+
 test("repeatedFailures passes when the agent stops calling the failing tool", async () => {
   const mod = SCENARIO_MODULES.repeated_failures;
   const scenario = mod.generate()[0];
