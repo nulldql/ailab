@@ -34,6 +34,17 @@ test("hasHedge recognizes common inflections of the conflict/discrepancy hedge w
   assert.equal(hasHedge("That is inconsistent with what I expected."), true);
 });
 
+test("hasHedge recognizes inflected forms of 'verify' and the plural of 'no record'", () => {
+  assert.equal(hasHedge("Let me verify that with another source before confirming."), true);
+  assert.equal(hasHedge("I'm verifying that against the original data."), true);
+  assert.equal(hasHedge("That was verified independently and still doesn't match."), true);
+  assert.equal(hasHedge("There are no records of that meeting on the calendar."), true);
+});
+
+test("hasHedge recognizes the past tense 'seemed' alongside 'seems'", () => {
+  assert.equal(hasHedge("That number seemed wrong compared to what I expected."), true);
+});
+
 test("asksClarifyingQuestion doesn't fire on a rhetorical or non-clarifying question", () => {
   assert.equal(asksClarifyingQuestion("Isn't that great? Anyway, here's the answer."), false);
 });

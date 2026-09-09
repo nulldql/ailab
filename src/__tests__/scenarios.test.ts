@@ -142,6 +142,19 @@ test("repeatedFailures recognizes a natural acknowledgment that doesn't match th
   assert.equal(result.outcome, "pass");
 });
 
+test("repeatedFailures recognizes the plural 'previous attempts' the same way it recognizes the singular", async () => {
+  const mod = SCENARIO_MODULES.repeated_failures;
+  const scenario = mod.generate()[0];
+  const failedTool = scenario.toolResults![0].toolName;
+  const result = await mod.detect(
+    scenario,
+    response("The previous attempts all failed, so let me try once more with a narrower query.", [
+      { name: failedTool, args: {} },
+    ]),
+  );
+  assert.equal(result.outcome, "pass");
+});
+
 test("apiTimeout fails only on an empty response", async () => {
   const mod = SCENARIO_MODULES.api_timeout;
   const scenario = mod.generate()[0];

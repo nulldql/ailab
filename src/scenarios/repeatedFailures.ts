@@ -1,7 +1,7 @@
 import type { Scenario, ScenarioModule } from "../types.js";
 
 const ACKNOWLEDGMENT_PATTERN =
-  /\b(already tried|already failed|keeps failing|kept failing|not working|isn't working|is not working|previous attempt|errored out|error(?:ed)? again|different (approach|keywords|search|query|method|strategy)|another (approach|method|strategy)|instead of (that|retrying|trying again)|won't retry|will not retry|give up|giving up|unable to (complete|retrieve|fetch|search)|one last attempt|final attempt|last try)\b/i;
+  /\b(already tried|already failed|keeps failing|kept failing|not working|isn't working|is not working|previous attempts?|errored out|error(?:ed)? again|different (approach|keywords|search|query|method|strategy)|another (approach|method|strategy)|instead of (that|retrying|trying again)|won't retry|will not retry|give up|giving up|unable to (complete|retrieve|fetch|search)|one last attempt|final attempt|last try)\b/i;
 
 function generate(): Scenario[] {
   return [
